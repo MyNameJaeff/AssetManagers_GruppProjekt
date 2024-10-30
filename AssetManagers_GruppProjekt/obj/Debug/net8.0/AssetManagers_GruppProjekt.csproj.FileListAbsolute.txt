@@ -1,0 +1,15 @@
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\bin\Debug\net8.0\AssetManagers_GruppProjekt.exe
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\bin\Debug\net8.0\AssetManagers_GruppProjekt.deps.json
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\bin\Debug\net8.0\AssetManagers_GruppProjekt.runtimeconfig.json
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\bin\Debug\net8.0\AssetManagers_GruppProjekt.dll
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\bin\Debug\net8.0\AssetManagers_GruppProjekt.pdb
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.AssemblyInfoInputs.cache
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.AssemblyInfo.cs
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.csproj.CoreCompileInputs.cache
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.sourcelink.json
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.dll
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\refint\AssetManagers_GruppProjekt.dll
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.pdb
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\AssetManagers_GruppProjekt.genruntimeconfig.cache
+C:\Users\fredr\source\repos\AssetManagers_GruppProjekt\AssetManagers_GruppProjekt\obj\Debug\net8.0\ref\AssetManagers_GruppProjekt.dll
