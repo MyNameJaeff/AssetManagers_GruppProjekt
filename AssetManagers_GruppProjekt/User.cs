@@ -25,7 +25,7 @@
 
             Transaction transaction = new Transaction(fromAccount.AccountNumber.ToString(), toAccount.AccountNumber.ToString(), amount, fromAccount.Currency);
             Transactions.Add(transaction);
-            Console.WriteLine(transaction.ToString());
+            //Console.WriteLine(transaction.ToString());
         }
 
 

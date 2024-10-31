@@ -26,14 +26,14 @@ public class BankSystem
         return FailedLoginAttempts >= 3;
     }
 
-    public bool Login(string username, string password)
+    public User? Login(string username, string password)
     {
         if (IsLockedOut())
         {
             throw new InvalidOperationException("Account is locked out due to too many failed attempts.");
         }
 
-        User foundUser = Users.Find(u => u.Username == username && u.Password == password);
+        User? foundUser = Users.Find(u => u.Username == username && u.Password == password);
 
         if (foundUser != null)
         {
@@ -41,7 +41,7 @@ public class BankSystem
             string userType = foundUser is Admin ? "Admin" : "Regular User";
             Console.WriteLine($"{userType} - Welcome, {foundUser.Username}!");
             FailedLoginAttempts = 0; // Reset on successful login
-            return true;
+            return foundUser;
         }
         else
         {
@@ -54,9 +54,10 @@ public class BankSystem
                 throw new InvalidOperationException("Account is locked out due to too many failed attempts.");
             }
 
-            return false;
+            return null; // Return null instead of false
         }
     }
+
 
     public void ExecutePendingTransactions()
     {
