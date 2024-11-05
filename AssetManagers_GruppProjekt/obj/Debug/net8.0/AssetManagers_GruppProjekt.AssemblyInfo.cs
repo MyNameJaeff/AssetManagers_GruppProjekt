@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AssetManagers_GruppProjekt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4d16411f917e70baa05247ae107e8f54a2db090")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0dcc0ea621960c8917c043470d863e3649dabca7")]
 [assembly: System.Reflection.AssemblyProductAttribute("AssetManagers_GruppProjekt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AssetManagers_GruppProjekt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

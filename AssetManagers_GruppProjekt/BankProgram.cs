@@ -99,16 +99,60 @@
                 Console.Clear();
                 PrintAsciiArt();
 
-                Console.WriteLine("Welcome to the main menu. Please select an option:\n" +
-                      "1. View Accounts\n" +
-                      "2. Deposit Funds\n" +
-                      "3. Withdraw Funds\n" +
-                      "4. Transfer Funds\n" +
-                      "5. View Transactions\n" +
-                      "6. Open New Account\n" +
-                      "7. Take/view loans\n" +
-                      (userIsAdmin ? "8. Create new user\n" : "") +
-                      "0. Logout\n");
+                string[] menuOptions = new string[]
+                {
+        "1.      View Accounts        ",
+        "-----------------------------",
+        "2.      Deposit Funds        ",
+        "-----------------------------",
+        "3.      Withdraw Funds       ",
+        "-----------------------------",
+        "4.      Transfer Funds       ",
+        "-----------------------------",
+        "5.      View Transactions    ",
+        "-----------------------------",
+        "6.      Open New Account     ",
+        "-----------------------------",
+        "7.      Take/View Loans      ",
+        "-----------------------------"
+                };
+
+                // Add the admin option if the user is an admin
+                if (userIsAdmin)
+                {
+                    menuOptions = menuOptions.Concat(new[]
+                    {
+            "8.      Create New User      ",
+            "-----------------------------"
+        }).ToArray();
+                }
+
+                // Get the width of the console window
+                int windowWidth = Console.WindowWidth;
+
+                Console.ForegroundColor = ConsoleColor.Cyan; // Set text color
+                int i = 0;
+                // Print each menu option centered
+                foreach (var option in menuOptions)
+                {
+                    if (i % 2 == 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                    }
+                    i++;
+                    // Calculate padding to center the line
+                    int padding = (windowWidth - option.Length) / 2;
+
+                    // Print spaces for centering
+                    Console.Write(new string(' ', Math.Max(0, padding))); // Ensure padding is non-negative
+                    Console.WriteLine(option);
+                }
+
+                Console.ResetColor(); // Reset text color to default
 
                 string? input = Console.ReadLine();
                 switch (input)

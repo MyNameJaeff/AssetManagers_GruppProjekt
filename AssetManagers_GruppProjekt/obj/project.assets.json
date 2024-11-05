@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj",
+      "projectUniqueName": "C:\\Users\\fredr\\Documents\\GitHub\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj",
       "projectName": "AssetManagers_GruppProjekt",
-      "projectPath": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj",
+      "projectPath": "C:\\Users\\fredr\\Documents\\GitHub\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj",
       "packagesPath": "C:\\Users\\fredr\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\obj\\",
+      "outputPath": "C:\\Users\\fredr\\Documents\\GitHub\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\fredr\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,7 +28,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -67,7 +66,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
