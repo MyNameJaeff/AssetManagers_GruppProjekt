@@ -286,8 +286,17 @@
 
             if (loanOption == "1")
             {
+                 int LoanLenght = user.Loans.Count;
+                if (LoanLenght == 0)
+                {
+                    Console.WriteLine("You currently have no loans");
+                    WaitForX();
+                    return;
+                }
+
                 user.Loans.ForEach(loan => Console.WriteLine(loan.ToString()));
                 WaitForX();
+
                 return;
             }
 
@@ -302,6 +311,20 @@
             var account = user.Accounts[accountIndex];
 
             string moneyCount = ValidateNonEmptyString("How much money would you like to borrow?");
+
+            int moneyAmount = 0;
+            try
+            {
+                moneyAmount = Convert.ToInt32(moneyCount);
+            }
+
+            catch (Exception A)
+            {
+                DisplayError(A.Message);
+                WaitForX();
+                return;
+            }
+
             if (!decimal.TryParse(moneyCount, out decimal loanedMoney) || loanedMoney <= 0)
             {
                 DisplayError("Invalid input. Please enter a valid loan amount greater than 0.");
