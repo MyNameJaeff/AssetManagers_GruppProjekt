@@ -14,31 +14,32 @@
             Password = password;
         }
 
-        public void TransferFunds(Account fromAccount, Account toAccount, decimal amount)
+        public Transaction TransferFunds(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount)
         {
             if (fromAccount.Balance < amount)
             {
                 throw new InvalidOperationException("Insufficient funds in the source account.");
             }
 
-            fromAccount.Withdraw(amount);
-            toAccount.Deposit(amount);
+            //fromAccount.Withdraw(amount);
+            //toAccount.Deposit(amount);
 
-            Transaction transaction = new Transaction(fromAccount.AccountNumber.ToString(), toAccount.AccountNumber.ToString(), amount, fromAccount.Currency);
+            Transaction transaction = new Transaction(fromUser, toUser, fromAccount, toAccount, amount, fromAccount.Currency);
             Transactions.Add(transaction);
             //Console.WriteLine(transaction.ToString());
+            return transaction;
         }
 
 
-        public void TransferToOtherUser(Account fromAccount, User recipient, Account recipientAccount, decimal amount)
+        public Transaction TransferToOtherUser(User fromUser, User toUser, Account fromAccount, User recipient, Account recipientAccount, decimal amount)
         {
-            fromAccount.Withdraw(amount);
-            recipientAccount.Deposit(amount);
+            //fromAccount.Withdraw(amount);
+            //recipientAccount.Deposit(amount);
 
-            Transaction transaction = new Transaction(fromAccount.AccountNumber.ToString(), recipientAccount.AccountNumber.ToString(), amount, fromAccount.Currency);
+            Transaction transaction = new Transaction(fromUser, toUser, fromAccount, recipientAccount, amount, fromAccount.Currency);
             Transactions.Add(transaction);
             recipient.Transactions.Add(transaction);
-            Console.WriteLine(transaction.ToString());
+            return transaction;
         }
 
         public Account OpenNewAccount(string currency)

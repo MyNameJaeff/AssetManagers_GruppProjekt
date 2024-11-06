@@ -1,60 +1,52 @@
-﻿namespace AssetManagers_GruppProjekt
+﻿using System.Timers;
+
+namespace AssetManagers_GruppProjekt
 {
     internal class BankProgram
     {
         private static BankSystem _bankSystem = new();
+        private static System.Timers.Timer? _transactionTimer;
 
         public BankProgram()
         {
             _bankSystem = new BankSystem();
         }
 
-        public void PrintAsciiArt()
+        // Every 5 minutes go through all transactions and run them as long as program is running
+        public void InitializeTimer()
+        {
+            _transactionTimer = new System.Timers.Timer(5 * 60 * 1000); // 5 minutes in milliseconds
+            _transactionTimer.Elapsed += OnTransactionTimerElapsed;
+            _transactionTimer.AutoReset = true;
+            _transactionTimer.Enabled = true;
+
+            // Run the transaction execution immediately
+            // OnTransactionTimerElapsed(null, null);
+
+            // Ensure the timer is disposed of properly when the application exits
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => _transactionTimer.Dispose();
+        }
+
+        private static void OnTransactionTimerElapsed(object? source, ElapsedEventArgs? e)
+        {
+            _bankSystem.ExecutePendingTransactions();
+        }
+
+        static void PrintAsciiArt()
         {
             string ascii = @"
-              /$$$$$$   /$$                      /$$                                    
-             /$$__  $$ | $$                     | $$                                    
-            | $$  \__/ | $$   /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   /$$$$$$   /$$$$$$$
-            |  $$$$$$  | $$  |____  $$ /$$_____/| $$  /$$/ /$$__  $$ /$$__  $$ /$$_____/
-             \____  $$ | $$   /$$$$$$$| $$      | $$$$$$/ | $$$$$$$$| $$  \__/|  $$$$$$ 
-             /$$  \ $$ | $$  /$$__  $$| $$      | $$_  $$ | $$_____/| $$       \____  $$
-            |  $$$$$$/ | $$ |  $$$$$$$|  $$$$$$$| $$ \  $$|  $$$$$$$| $$       /$$$$$$$/
-             \______/  |__/  \_______/ \_______/|__/  \__/ \_______/|__/      |_______/ 
-            _______________________________________________________________________________________
+  /$$$$$$   /$$                      /$$                                    
+ /$$__  $$ | $$                     | $$                                    
+| $$  \__/ | $$   /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   /$$$$$$   /$$$$$$$
+|  $$$$$$  | $$  |____  $$ /$$_____/| $$  /$$/ /$$__  $$ /$$__  $$ /$$_____/
+ \____  $$ | $$   /$$$$$$$| $$      | $$$$$$/ | $$$$$$$$| $$  \__/|  $$$$$$ 
+ /$$  \ $$ | $$  /$$__  $$| $$      | $$_  $$ | $$_____/| $$       \____  $$
+|  $$$$$$/ | $$ |  $$$$$$$|  $$$$$$$| $$ \  $$|  $$$$$$$| $$       /$$$$$$$/
+ \______/  |__/  \_______/ \_______/|__/  \__/ \_______/|__/      |_______/ 
+_______________________________________________________________________________________
             ";
 
-            // Split the ASCII art into lines
-            string[] lines = ascii.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-            // List to hold individual characters
-            List<string> combinedLines = new List<string>();
-
-            // Process each line to split letters and combine them
-            foreach (string line in lines)
-            {
-                // Split each character and combine them into a single string
-                string combinedLine = string.Join("", line.Select(c => c.ToString()));
-                combinedLines.Add(combinedLine);
-            }
-
-            // Get the width of the terminal window
-            int windowWidth = Console.WindowWidth;
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-
-            // Print each combined line, centered
-            foreach (string combinedLine in combinedLines)
-            {
-                // Calculate padding to center the line
-                int padding = (windowWidth - combinedLine.Length) / 2;
-
-                // Print spaces for centering
-                Console.Write(new string(' ', padding));
-
-                // Print the combined line
-                Console.WriteLine(combinedLine);
-            }
-            Console.ResetColor();
+            PrintCenteredText(ascii, false);
         }
 
         public void InitializeValues()
@@ -69,20 +61,33 @@
             // Create two distinct accounts for the user
             Account account1 = user.OpenNewAccount("USD");
             Account account2 = user.OpenNewAccount("USD");
+            Account account3 = user.OpenNewAccount("EUR");
+
+            Account adminaccount1 = admin.OpenNewAccount("USD");
+            Account adminaccount2 = admin.OpenNewAccount("EUR");
             SavingsAccount savingsAccount = user.OpenNewSavingAccount("USD", 0.05m);
 
             // Deposit initial amounts into both accounts
             account1.Deposit(500);
             account2.Deposit(500);
+            account3.Deposit(500);
+
+            adminaccount1.Deposit(5000);
+            adminaccount2.Deposit(5000);
+
             savingsAccount.Deposit(5000);
 
 
             // HÄR KAN VI LÄGGA TILL MER KOD FÖR ATT TESTA VÅR BANKSYSTEM
 
-            user.TransferFunds(account1, account2, 100);
+            _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, account1, account2, 100));
         }
 
-
+        static void ClearAndPrintAsciiArt()
+        {
+            Console.Clear();
+            PrintAsciiArt();
+        }
         public void MainMenu()
         {
             PrintAsciiArt();
@@ -101,20 +106,20 @@
 
                 string[] menuOptions = new string[]
                 {
-        "1.      View Accounts        ",
-        "-----------------------------",
-        "2.      Deposit Funds        ",
-        "-----------------------------",
-        "3.      Withdraw Funds       ",
-        "-----------------------------",
-        "4.      Transfer Funds       ",
-        "-----------------------------",
-        "5.      View Transactions    ",
-        "-----------------------------",
-        "6.      Open New Account     ",
-        "-----------------------------",
-        "7.      Take/View Loans      ",
-        "-----------------------------"
+                    "1.      View Accounts        ",
+                    "-----------------------------",
+                    "2.      Deposit Funds        ",
+                    "-----------------------------",
+                    "3.      Withdraw Funds       ",
+                    "-----------------------------",
+                    "4.      Transfer Funds       ",
+                    "-----------------------------",
+                    "5.      View Transactions    ",
+                    "-----------------------------",
+                    "6.      Open New Account     ",
+                    "-----------------------------",
+                    "7.      Take/View Loans      ",
+                    "-----------------------------"
                 };
 
                 // Add the admin option if the user is an admin
@@ -122,85 +127,52 @@
                 {
                     menuOptions = menuOptions.Concat(new[]
                     {
-            "8.      Create New User      ",
-            "-----------------------------"
-        }).ToArray();
+                    "8.      Create New User      ",
+                    "-----------------------------"
+                    }).ToArray();
                 }
+                menuOptions = menuOptions.Concat(new[] {
+                    "0.      Logout               ",
+                    "-----------------------------",
+                    "X.      Exit                 ",
+                    "-----------------------------"
+                }).ToArray();
 
-                // Get the width of the console window
-                int windowWidth = Console.WindowWidth;
-
-                Console.ForegroundColor = ConsoleColor.Cyan; // Set text color
-                int i = 0;
-                // Print each menu option centered
-                foreach (var option in menuOptions)
+                PrintCenteredText(string.Join(Environment.NewLine, menuOptions), true, ConsoleColor.Cyan, ConsoleColor.DarkCyan);
+                var menuActions = new Dictionary<ConsoleKey, Action>
                 {
-                    if (i % 2 == 1)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                    }
-                    i++;
-                    // Calculate padding to center the line
-                    int padding = (windowWidth - option.Length) / 2;
+                    { ConsoleKey.D1, () => { ClearAndPrintAsciiArt(); ViewAccounts(user, true); WaitForX(); } },
+                    { ConsoleKey.D2, () => { ClearAndPrintAsciiArt(); Deposit(user); } },
+                    { ConsoleKey.D3, () => { ClearAndPrintAsciiArt(); Withdraw(user); } },
+                    { ConsoleKey.D4, () => { ClearAndPrintAsciiArt(); TransferFunds(user); } },
+                    { ConsoleKey.D5, () => { ClearAndPrintAsciiArt(); CheckTransactions(user); } },
+                    { ConsoleKey.D6, () => { ClearAndPrintAsciiArt(); OpenNewAccount(user); } },
+                    { ConsoleKey.D7, () => { Loan(user); ClearAndPrintAsciiArt(); } },
+                    { ConsoleKey.D8, () => { if (userIsAdmin) { ClearAndPrintAsciiArt(); CreateNewUser(); } } },
+                    { ConsoleKey.D0, () => { ClearAndPrintAsciiArt(); Logout(this); } },
+                    { ConsoleKey.X, () => { ConfirmExit(); } }
+                };
 
-                    // Print spaces for centering
-                    Console.Write(new string(' ', Math.Max(0, padding))); // Ensure padding is non-negative
-                    Console.WriteLine(option);
-                }
 
-                Console.ResetColor(); // Reset text color to default
-
-                string? input = Console.ReadLine();
-                switch (input)
+                var key = WaitForReadkey();
+                if (menuActions.ContainsKey(key))
                 {
-                    case "1":
-                        // View accounts logic
-                        ViewAccounts(user);
-                        break;
-                    case "2":
-                        // Deposit Funds logic
-                        Deposit(user);
-                        break;
-                    case "3":
-                        // Withdraw Funds logic
-                        Withdraw(user);
-                        break;
-                    case "4":
-                        // Transfer Funds logic
-                        TransferFunds(user);
-                        break;
-                    case "5":
-                        // View Transactions logic
-                        CheckTransactions(user);
-                        break;
-                    case "6":
-                        // Open New Account logic
-                        OpenNewAccount(user);
-                        break;
-                    case "7":
-                        {
-                            Loan(user);
-                            break;
-                        }
-                    case "8":
-                        if (userIsAdmin)
-                        {
-                            // Create new user logic
-                            CreateNewUser();
-                        }
-                        break;
-                    case "0":
-                        // Logout logic
-                        Logout(this);
-                        break;
-                    default:
-                        Console.WriteLine("Invalid option. Please try again.");
-                        break;
+                    menuActions[key].Invoke();
                 }
+                else
+                {
+                    DisplayError("Invalid option. Please try again.");
+                }
+            }
+        }
+
+        private void ConfirmExit()
+        {
+            DisplayError("Are you sure? If so press X again to exit!");
+            if (WaitForReadkey() == ConsoleKey.X)
+            {
+                PrintCenteredText("Bye!");
+                Environment.Exit(0);
             }
         }
         static User? Login()
@@ -211,18 +183,24 @@
             while (!userIsLoggedIn)
             {
                 // Display a welcome message with instructions
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("====================================");
-                Console.WriteLine("           User Login");
-                Console.WriteLine("====================================");
-                Console.ResetColor();
-
+                string[] loginTitle = new string[]
+                {
+                    "====================================",
+                    "             User Login             ",
+                    "===================================="
+                };
+                foreach (var line in loginTitle)
+                {
+                    PrintCenteredText(line, true, ConsoleColor.Cyan, ConsoleColor.DarkCyan);
+                }
                 // Prompt for username
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                string username = ValidateNonEmptyString("Enter username: ");
+                string username = ValidateNonEmptyString("Enter username: ", ConsoleColor.Yellow);
 
                 // Prompt for password with masked input
-                Console.WriteLine("Enter password: ");
+                string prompt = "Enter password: ";
+                PrintCenteredText(prompt, false, ConsoleColor.Yellow);
+                Console.SetCursorPosition((int)((Console.WindowWidth - prompt.Length + Math.Round(prompt.Length * 0.1)) / 2), Console.CursorTop); // Centering input cursor
                 string password = ReadPassword();
 
                 Console.ResetColor();
@@ -245,7 +223,7 @@
                 }
 
                 // Optional pause for readability
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 Console.Clear();
             }
             return null;
@@ -286,15 +264,15 @@
 
             if (loanOption == "1")
             {
-                 int LoanLenght = user.Loans.Count;
+                int LoanLenght = user.Loans.Count;
                 if (LoanLenght == 0)
                 {
-                    Console.WriteLine("You currently have no loans");
+                    PrintCenteredText("You currently have no loans");
                     WaitForX();
                     return;
                 }
 
-                user.Loans.ForEach(loan => Console.WriteLine(loan.ToString()));
+                user.Loans.ForEach(loan => PrintCenteredText(loan.ToString()));
                 WaitForX();
 
                 return;
@@ -354,51 +332,76 @@
             WaitForX();
         }
 
-        static void ViewAccounts(User user)
+        static void ViewAccounts(User user, bool detailed)
         {
             var userAccounts = user.Accounts;
 
-            Console.WriteLine("Accounts:");
+            if (user.Accounts.Count == 0)
+            {
+                PrintCenteredText("You have no accounts yet, go make one!", true, ConsoleColor.Yellow);
+                WaitForX();
+                return;
+            }
+
+            PrintCenteredText("Accounts:", true, ConsoleColor.White);
+            PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
+            PrintCenteredText("| #   | Account ID                           | Balance      | Currency | Account Type    |", true, ConsoleColor.Gray);
+            PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
+
+            int accountNumber = 1;
             foreach (var account in userAccounts)
             {
                 if (account is SavingsAccount savingsAccount)
                 {
-                    Console.WriteLine($"Account number: {account.AccountNumber}, Balance: {account.Balance}, Currency: {account.Currency} (Savings account), {savingsAccount.Balance * savingsAccount.InterestRate}kr/år ({savingsAccount.InterestRate * 100}%)");
+                    PrintCenteredText(
+                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance,-12:C} | {account.Currency,-8} | Savings Account |", true, ConsoleColor.White);
+                    PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
+
+                    if (detailed)
+                    {
+                        PrintCenteredText($"  Interest Income: {savingsAccount.Balance * savingsAccount.InterestRate:C}, Interest Rate: {savingsAccount.InterestRate * 100}%", true, ConsoleColor.DarkYellow);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Account number: {account.AccountNumber}, Balance: {account.Balance}, Currency: {account.Currency} (Private account)");
+                    PrintCenteredText(
+                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance,-12:C} | {account.Currency,-8} | Private Account |", true, ConsoleColor.White);
+                    PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
                 }
+                accountNumber++;
             }
-            WaitForX();
+            Console.WriteLine();
         }
+
 
         static void Deposit(User user)
         {
-            string? accountIndexInput = ValidateNonEmptyString($"Enter the account number you want to deposit funds to (0-{user.Accounts.Count() - 1}):");
+            ViewAccounts(user, false);
+            string? accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to deposit funds to (1-{user.Accounts.Count()}):");
 
-            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex < 0 || accountIndex >= user.Accounts.Count)
+            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex - 1 < 0 || accountIndex - 1 >= user.Accounts.Count)
             {
                 DisplayError("Invalid account number.");
+                WaitForX();
                 return;
             }
 
-            var account = user.Accounts[accountIndex];
+            var account = user.Accounts[accountIndex - 1];
 
             string depositAmount = ValidateNonEmptyString("Enter the amount you want to deposit:");
             if (!decimal.TryParse(depositAmount, out decimal amount) || amount <= 0)
             {
                 DisplayError("Invalid amount.");
+                WaitForX();
                 return;
             }
 
             try
             {
                 account.Deposit(amount);
-                Console.WriteLine($"Successfully deposited {amount} {account.Currency} to account {account.AccountNumber}.");
-                Console.WriteLine($"The accounts new balance is: {account.Balance} {account.Currency}.");
-                Thread.Sleep(2000);
-
+                PrintCenteredText($"Successfully deposited {amount} {account.Currency} to account {account.AccountNumber}.");
+                PrintCenteredText($"The accounts new balance is: {account.Balance} {account.Currency}.");
+                WaitForX();
             }
             catch (Exception ex)
             {
@@ -408,15 +411,16 @@
 
         static void Withdraw(User user)
         {
-            string accountIndexInput = ValidateNonEmptyString($"Enter the account number you want to withdraw funds from (0-{user.Accounts.Count() - 1}):");
+            ViewAccounts(user, false);
+            string accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to withdraw funds from (1-{user.Accounts.Count()}):");
 
-            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex < 0 || accountIndex >= user.Accounts.Count)
+            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex - 1 < 0 || accountIndex - 1 >= user.Accounts.Count)
             {
                 DisplayError("Invalid account number.");
                 return;
             }
 
-            var account = user.Accounts[accountIndex];
+            var account = user.Accounts[accountIndex - 1];
 
             string amountInput = ValidateNonEmptyString("Enter the amount you want to withdraw:");
             if (!decimal.TryParse(amountInput, out decimal amount) || amount <= 0)
@@ -427,10 +431,11 @@
 
             try
             {
+                Console.WriteLine();
                 account.Withdraw(amount);
-                Console.WriteLine($"Successfully withdrew {amount} {account.Currency} from account {account.AccountNumber}.");
-                Console.WriteLine($"The accounts new balance is: {account.Balance} {account.Currency}.");
-                Thread.Sleep(2000);
+                PrintCenteredText($"Successfully withdrew {amount} {account.Currency} from account {account.AccountNumber}.");
+                PrintCenteredText($"The accounts new balance is: {account.Balance} {account.Currency}.");
+                WaitForX();
             }
             catch (Exception ex)
             {
@@ -445,38 +450,50 @@
 
             if (transferOption == "1")
             {
+                ClearAndPrintAsciiArt();
+                ViewAccounts(user, false);
                 // Transfer within the user's own accounts
-                string? fromAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds from (0-{user.Accounts.Count() - 1}):");
+                string? fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
 
-                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex < 0 || fromAccountIndex >= user.Accounts.Count)
+                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex - 1 < 0 || fromAccountIndex - 1 >= user.Accounts.Count)
                 {
                     DisplayError("Invalid account number.");
                     return;
                 }
 
-                var fromAccount = user.Accounts[fromAccountIndex];
+                var fromAccount = user.Accounts[fromAccountIndex - 1];
 
-                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (0-{user.Accounts.Count() - 1}):");
+                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{user.Accounts.Count()}):");
 
-                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex < 0 || toAccountIndex >= user.Accounts.Count || toAccountIndex == fromAccountIndex)
+                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex - 1 < 0 || toAccountIndex - 1 >= user.Accounts.Count || toAccountIndex - 1 == fromAccountIndex - 1)
                 {
                     DisplayError("Invalid account number.");
                     return;
                 }
 
-                var toAccount = user.Accounts[toAccountIndex];
+                var toAccount = user.Accounts[toAccountIndex - 1];
+
+                if (fromAccount.Currency != toAccount.Currency)
+                {
+                    PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency} the current conversion rate is: ");
+                    PrintCenteredText(_bankSystem.DisplayExchangeRates());
+                }
 
                 string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
+
                 if (!decimal.TryParse(transferAmount, out decimal amount) || amount <= 0)
                 {
                     DisplayError("Invalid amount.");
                     return;
                 }
 
+                decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
+
                 try
                 {
-                    user.TransferFunds(fromAccount, toAccount, amount);
-                    Console.WriteLine($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}.");
+                    _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, fromAccount, toAccount, convertedAmount));
+                    PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                    WaitForX();
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -496,45 +513,65 @@
                     return;
                 }
 
-                string? fromAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds from (0-{user.Accounts.Count() - 1}):");
+                if (recipient.Accounts.Count == 0)
+                {
+                    DisplayError("They dont have any accounts!");
+                    return;
+                }
 
-                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex < 0 || fromAccountIndex >= user.Accounts.Count)
+                ClearAndPrintAsciiArt();
+                ViewAccounts(user, false);
+                string? fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
+
+                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex - 1 < 0 || fromAccountIndex - 1 >= user.Accounts.Count)
                 {
                     DisplayError("Invalid account number.");
                     return;
                 }
 
-                var fromAccount = user.Accounts[fromAccountIndex];
+                var fromAccount = user.Accounts[fromAccountIndex - 1];
 
-                Console.WriteLine($"Available accounts for {recipient.Username}:");
+                PrintCenteredText($"Available accounts for {recipient.Username}:");
                 for (int i = 0; i < recipient.Accounts.Count; i++)
                 {
                     var account = recipient.Accounts[i];
-                    Console.WriteLine($"{i}. Account number: {account.AccountNumber}, Balance: {account.Balance}, Currency: {account.Currency}");
+                    PrintCenteredText($"{i}. Account number: {account.AccountNumber}, Balance: {account.Balance}, Currency: {account.Currency}");
                 }
 
-                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (0-{recipient.Accounts.Count() - 1}):");
+                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{recipient.Accounts.Count()}):");
 
-                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex < 0 || toAccountIndex >= recipient.Accounts.Count)
+                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex - 1 < 0 || toAccountIndex - 1 >= recipient.Accounts.Count)
                 {
                     DisplayError("Invalid account number.");
+                    WaitForX();
                     return;
                 }
 
-                var toAccount = recipient.Accounts[toAccountIndex];
+                var toAccount = recipient.Accounts[toAccountIndex - 1];
+
+                if (fromAccount.Currency != toAccount.Currency)
+                {
+                    PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency} the current conversion rate is: ");
+                    _bankSystem.DisplayExchangeRates();
+                }
 
                 string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
+
                 if (!decimal.TryParse(transferAmount, out decimal amount) || amount <= 0)
                 {
                     DisplayError("Invalid amount.");
                     return;
                 }
 
+                decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
+
                 try
                 {
-                    user.TransferToOtherUser(fromAccount, recipient, toAccount, amount);
-                    Console.WriteLine($"Successfully transferred {amount} {fromAccount.Currency} from your account {fromAccount.AccountNumber} to {recipient.Username}'s account {toAccount.AccountNumber}.");
+                    _bankSystem.AddTransactionToPending(user.TransferFunds(user, recipient, fromAccount, toAccount, convertedAmount));
+                    PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                    WaitForX();
                 }
+
                 catch (InvalidOperationException ex)
                 {
                     DisplayError(ex.Message);
@@ -542,10 +579,10 @@
             }
             else
             {
-                Console.WriteLine("Invalid option selected.");
+                PrintCenteredText("Invalid option selected.");
             }
 
-            Thread.Sleep(2000);
+            WaitForX();
         }
 
 
@@ -554,9 +591,9 @@
             var availableCurrencies = new HashSet<string> { "USD", "EUR", "SEK" };
             string stringType = "";
 
-            Console.WriteLine("Choose type of account:\n" +
-                "1. Private Account\n" +
-                "2. Saving Account\n");
+            PrintCenteredText("Choose type of account:\n");
+            PrintCenteredText("1. Private Account");
+            PrintCenteredText("2. Saving Account");
 
             string? accountype;
             while (true)
@@ -574,7 +611,7 @@
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Available Currencies: USD, EUR, SEK");
+            PrintCenteredText("Available Currencies: USD, EUR, SEK");
             Console.ResetColor();
             string userCurrency;
 
@@ -587,7 +624,7 @@
                 {
 
                     Console.WriteLine($"{stringType} Created!");
-                    Thread.Sleep(2000);
+                    WaitForX();
                     break;
                 }
 
@@ -606,10 +643,19 @@
 
         static void CheckTransactions(User user)
         {
+            Console.WriteLine("Transactions:");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("|    Date and Time    | Amount | Currency |               Sender ID              |               Receiver ID            |");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
             foreach (var transaction in user.Transactions)
             {
-                Console.WriteLine(transaction.ToString());
+                Console.WriteLine($"| {transaction.Timestamp} | {transaction.Amount,-6} | {transaction.Currency,-6}   | {transaction.FromAccount.AccountNumber,-10} | {transaction.ToAccount.AccountNumber,-28} |");
             }
+
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+            // Pauses execution to allow user to view transactions
             WaitForX();
         }
 
@@ -662,31 +708,32 @@
                 return;
             }
 
-            Console.WriteLine("New user created successfully.");
+            PrintCenteredText("New user created successfully.");
             WaitForX();
         }
 
         static void Logout(BankProgram bankProgram) // Gotta check such that this works
         {
-            Console.WriteLine("You have been logged out.");
-            Thread.Sleep(2000);
+            PrintCenteredText("You have been logged out.");
+            Thread.Sleep(4000);
             Console.Clear();
             bankProgram.MainMenu();
         }
 
+
+
         static void WaitForX()
         {
             // Set instruction text color
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\nPress 'X' to go back.");
+            PrintCenteredText("\nPress 'X' to go back.");
 
             while (true)
             {
                 // Capture the key press
-                ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true); // 'true' to prevent key output on the console
+                ConsoleKey keyInfo = WaitForReadkey();
 
                 // Check if the key pressed was 'X' or 'x'
-                if (keyInfo.Key == ConsoleKey.X)
+                if (keyInfo == ConsoleKey.X)
                 {
                     Console.Clear();
                     Console.ResetColor(); // Reset color to default before returning
@@ -694,8 +741,6 @@
                 }
                 else
                 {
-                    // Set color for invalid input message
-
                     DisplayError("Invalid input. Please press 'X' to go back.");
 
                     // Reset to instruction color for clarity
@@ -704,11 +749,45 @@
             }
         }
 
+        static ConsoleKey WaitForReadkey()
+        {
+            return Console.ReadKey(intercept: true).Key;
+        }
+
         static void DisplayError(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Red; // Set color for errors
-            Console.WriteLine($"Error: {message}"); // Display the error message
-            Console.ResetColor(); // Reset color to default
+            PrintCenteredText(message, false, ConsoleColor.Red, ConsoleColor.White); // Display the error message
+        }
+
+        static void PrintCenteredText(string text, bool alternateColors = false, ConsoleColor color1 = ConsoleColor.Cyan, ConsoleColor color2 = ConsoleColor.DarkCyan)
+        {
+            string[] lines = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int windowWidth = Console.WindowWidth;
+            int i = 0;
+
+            // Print each menu option, optionally centered and with alternating colors
+            foreach (var line in lines)
+            {
+                if (alternateColors)
+                {
+                    Console.ForegroundColor = (i % 2 == 0) ? color1 : color2;
+                }
+                else
+                {
+                    Console.ForegroundColor = color1;
+                }
+                i++;
+
+                // Calculate padding to center the line
+                int padding = (windowWidth - line.Length) / 2;
+
+                // Print spaces for centering
+                Console.Write(new string(' ', Math.Max(0, padding))); // Ensure padding is non-negative
+
+                Console.WriteLine(line);
+            }
+
+            Console.ResetColor();
         }
 
         // Validation methods under here:
@@ -741,11 +820,12 @@
             return hasUpperCase && hasLowerCase && hasDigit;
         }
 
-        static string ValidateNonEmptyString(string prompt)
+        static string ValidateNonEmptyString(string prompt, ConsoleColor color1 = ConsoleColor.White)
         {
             while (true)
             {
-                Console.WriteLine(prompt);
+                PrintCenteredText(prompt, false, color1);
+                Console.SetCursorPosition((int)((Console.WindowWidth - prompt.Length + Math.Round(prompt.Length * 0.1)) / 2), Console.CursorTop); // Centering input cursor
                 string? input = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(input))
                 {

@@ -5,6 +5,7 @@ public class BankSystem
     // Properties
     public List<User> Users { get; set; }
     public List<Account> Accounts { get; set; }
+    private List<Transaction> _pendingTransactions { get; set; }
     public Dictionary<string, decimal> ExchangeRates { get; set; }
     private int FailedLoginAttempts { get; set; }
 
@@ -13,12 +14,28 @@ public class BankSystem
     {
         Users = new List<User>();
         Accounts = new List<Account>();
+        _pendingTransactions = new List<Transaction>();
         ExchangeRates = new Dictionary<string, decimal>
             {
                 { "USD", 1.0m },  // Example exchange rates
                 { "EUR", 0.85m },
                 { "SEK", 9.0m }
             };
+    }
+
+    public string DisplayExchangeRates()
+    {
+        string[] exchangeRates = new string[]
+        {
+            "Exchange Rates:",
+            "--------------------------------"
+        };
+        foreach (var rate in ExchangeRates)
+        {
+            exchangeRates = exchangeRates.Concat(new[] { $"| {rate.Key,-5} | {rate.Value,8:F2} |" }).ToArray();
+        }
+        exchangeRates = exchangeRates.Concat(new[] { "--------------------------------" }).ToArray();
+        return string.Join(Environment.NewLine, exchangeRates);
     }
 
     public bool IsLockedOut()
@@ -58,12 +75,40 @@ public class BankSystem
         }
     }
 
+    public void AddTransactionToPending(Transaction transaction)
+    {
+        _pendingTransactions.Add(transaction);
+    }
 
     public void ExecutePendingTransactions()
     {
-        // Code to execute pending transactions
+        // Ensure the _pendingTransactions list is initialized
+        if (_pendingTransactions == null)
+        {
+            _pendingTransactions = new List<Transaction>();
+        }
+
+        // Log the start of the transaction execution process
         Console.WriteLine("Executing pending transactions...");
-        // Example: iterate through pending transactions and process each one
+
+        // Iterate through pending transactions and process each one
+        foreach (var transaction in _pendingTransactions.ToList()) // Use ToList() to avoid modifying the collection while iterating
+        {
+            try
+            {
+                transaction.FromAccount.Withdraw(transaction.Amount);
+                transaction.ToAccount.Deposit(transaction.Amount);
+                Console.WriteLine($"Transaction executed: {transaction}");
+
+                // Remove the transaction from the pending list after successful execution
+                _pendingTransactions.Remove(transaction);
+            }
+            catch (Exception ex)
+            {
+                // Log the error and continue with the next transaction
+                Console.WriteLine($"Failed to execute transaction: {transaction}. Error: {ex.Message}");
+            }
+        }
     }
 
     public decimal ConvertCurrency(decimal amount, string fromCurrency, string toCurrency)

@@ -6,6 +6,7 @@
         {
             BankProgram bankProgram = new();
             bankProgram.InitializeValues();
+            bankProgram.InitializeTimer();
             bankProgram.MainMenu();
         }
     }
