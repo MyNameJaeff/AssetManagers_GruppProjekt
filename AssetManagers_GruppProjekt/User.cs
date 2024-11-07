@@ -14,31 +14,16 @@
             Password = password;
         }
 
-        public Transaction TransferFunds(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount)
+        public Transaction TransferFunds(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount, decimal convertedAmount)
         {
             if (fromAccount.Balance < amount)
             {
                 throw new InvalidOperationException("Insufficient funds in the source account.");
             }
 
-            //fromAccount.Withdraw(amount);
-            //toAccount.Deposit(amount);
-
-            Transaction transaction = new Transaction(fromUser, toUser, fromAccount, toAccount, amount, fromAccount.Currency);
+            Transaction transaction = new Transaction(fromUser, toUser, fromAccount, toAccount, amount, convertedAmount, fromAccount.Currency);
             Transactions.Add(transaction);
             //Console.WriteLine(transaction.ToString());
-            return transaction;
-        }
-
-
-        public Transaction TransferToOtherUser(User fromUser, User toUser, Account fromAccount, User recipient, Account recipientAccount, decimal amount)
-        {
-            //fromAccount.Withdraw(amount);
-            //recipientAccount.Deposit(amount);
-
-            Transaction transaction = new Transaction(fromUser, toUser, fromAccount, recipientAccount, amount, fromAccount.Currency);
-            Transactions.Add(transaction);
-            recipient.Transactions.Add(transaction);
             return transaction;
         }
 

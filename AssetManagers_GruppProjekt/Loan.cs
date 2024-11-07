@@ -20,7 +20,7 @@
 
         public override string ToString()
         {
-            return $"Loan: {BorrowedMoney} kr, Interest rate: {InterestRate}%, Period: {LoanPeriod} months, Startdate: {StartLoanDate}, End-date: {EndLoanDate}";
+            return $"Loan: {BorrowedMoney}, Interest rate: {InterestRate}%, Period: {LoanPeriod} months, Startdate: {StartLoanDate}, End-date: {EndLoanDate}";
         }
     }
 }

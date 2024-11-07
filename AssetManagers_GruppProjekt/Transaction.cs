@@ -7,15 +7,17 @@
         public Account FromAccount { get; private set; }
         public Account ToAccount { get; private set; }
         public decimal Amount { get; private set; }
+        public decimal ConvertedAmount { get; private set; }
         public string Currency { get; private set; }
         public DateTime Timestamp { get; private set; }
-        public Transaction(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount, string currency)
+        public Transaction(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount, decimal convertedAmount, string currency)
         {
             FromUser = fromUser;
             ToUser = toUser;
             FromAccount = fromAccount;
             ToAccount = toAccount;
             Amount = amount;
+            ConvertedAmount = convertedAmount;
             Currency = currency;
             Timestamp = DateTime.Now;
         }

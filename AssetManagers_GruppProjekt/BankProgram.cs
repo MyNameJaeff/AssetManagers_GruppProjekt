@@ -15,13 +15,13 @@ namespace AssetManagers_GruppProjekt
         // Every 5 minutes go through all transactions and run them as long as program is running
         public void InitializeTimer()
         {
-            _transactionTimer = new System.Timers.Timer(5 * 60 * 1000); // 5 minutes in milliseconds
+            _transactionTimer = new System.Timers.Timer(0.3 * 60 * 1000); // 5 minutes in milliseconds
             _transactionTimer.Elapsed += OnTransactionTimerElapsed;
             _transactionTimer.AutoReset = true;
             _transactionTimer.Enabled = true;
 
             // Run the transaction execution immediately
-            // OnTransactionTimerElapsed(null, null);
+            OnTransactionTimerElapsed(null, null);
 
             // Ensure the timer is disposed of properly when the application exits
             AppDomain.CurrentDomain.ProcessExit += (s, e) => _transactionTimer.Dispose();
@@ -54,9 +54,11 @@ ________________________________________________________________________________
             // Adding a sample user
             User user = new User("Jeff", "123");
             Admin admin = new Admin("Admin", "Admin");
+            Admin rng = new Admin("m", "1");
 
             _bankSystem.Users.Add(user);
             _bankSystem.Users.Add(admin);
+            _bankSystem.Users.Add(rng);
 
             // Create two distinct accounts for the user
             Account account1 = user.OpenNewAccount("USD");
@@ -80,7 +82,9 @@ ________________________________________________________________________________
 
             // HÄR KAN VI LÄGGA TILL MER KOD FÖR ATT TESTA VÅR BANKSYSTEM
 
-            _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, account1, account2, 100));
+            decimal convertedAmount = _bankSystem.ConvertCurrency(100, account1.Currency, account2.Currency);
+
+            _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, account1, account2, 100, convertedAmount));
         }
 
         static void ClearAndPrintAsciiArt()
@@ -98,6 +102,8 @@ ________________________________________________________________________________
             }
             User? user = (User)checkLogin;
             bool userIsAdmin = user is Admin;
+
+            string errorMessage = string.Empty; // Variable to store the error message
 
             while (true)
             {
@@ -139,6 +145,13 @@ ________________________________________________________________________________
                 }).ToArray();
 
                 PrintCenteredText(string.Join(Environment.NewLine, menuOptions), true, ConsoleColor.Cyan, ConsoleColor.DarkCyan);
+
+                // Display the error message if it exists
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+
                 var menuActions = new Dictionary<ConsoleKey, Action>
                 {
                     { ConsoleKey.D1, () => { ClearAndPrintAsciiArt(); ViewAccounts(user, true); WaitForX(); } },
@@ -147,24 +160,26 @@ ________________________________________________________________________________
                     { ConsoleKey.D4, () => { ClearAndPrintAsciiArt(); TransferFunds(user); } },
                     { ConsoleKey.D5, () => { ClearAndPrintAsciiArt(); CheckTransactions(user); } },
                     { ConsoleKey.D6, () => { ClearAndPrintAsciiArt(); OpenNewAccount(user); } },
-                    { ConsoleKey.D7, () => { Loan(user); ClearAndPrintAsciiArt(); } },
+                    { ConsoleKey.D7, () => { ClearAndPrintAsciiArt(); Loan(user); } },
                     { ConsoleKey.D8, () => { if (userIsAdmin) { ClearAndPrintAsciiArt(); CreateNewUser(); } } },
+                    { ConsoleKey.D9, () => { if (userIsAdmin) { ClearAndPrintAsciiArt(); _bankSystem.UpdateExchangeRate(); } } },
                     { ConsoleKey.D0, () => { ClearAndPrintAsciiArt(); Logout(this); } },
                     { ConsoleKey.X, () => { ConfirmExit(); } }
                 };
-
 
                 var key = WaitForReadkey();
                 if (menuActions.ContainsKey(key))
                 {
                     menuActions[key].Invoke();
+                    errorMessage = string.Empty; // Clear the error message after a valid action
                 }
                 else
                 {
-                    DisplayError("Invalid option. Please try again.");
+                    errorMessage = "Invalid option. Please try again."; // Set the error message if the option is invalid
                 }
             }
         }
+
 
         private void ConfirmExit()
         {
@@ -260,77 +275,109 @@ ________________________________________________________________________________
 
         static void Loan(User user)
         {
-            string loanOption = ValidateNonEmptyString("Select 1 to view all your loans, select 2 to take a loan:");
-
-            if (loanOption == "1")
+            if (user.Accounts.Count == 0)
             {
-                int LoanLenght = user.Loans.Count;
-                if (LoanLenght == 0)
+                DisplayError("You have no accounts to deposit to.");
+                WaitForX();
+                return;
+            }
+            while (true)
+            {
+                string loanOption = ValidateNonEmptyString("Select 1 to view all your loans, select 2 to take a loan:");
+                if (loanOption != "1" && loanOption != "2")
                 {
-                    PrintCenteredText("You currently have no loans");
+                    DisplayError("Invalid option. Please try again.");
+                    continue;
+                }
+                else if (loanOption == "1")
+                {
+                    int LoanLenght = user.Loans.Count;
+                    if (LoanLenght == 0)
+                    {
+                        PrintCenteredText("You currently have no loans");
+                        WaitForX();
+                        return;
+                    }
+
+                    user.Loans.ForEach(loan => PrintCenteredText(loan.ToString()));
                     WaitForX();
                     return;
                 }
 
-                user.Loans.ForEach(loan => PrintCenteredText(loan.ToString()));
-                WaitForX();
+                // Get valid loan account selection
+                string selectedIndex;
+                while (true)
+                {
+                    ViewAccounts(user, false);
+                    selectedIndex = ValidateNonEmptyString($"Enter the account number to loan money to (1-{user.Accounts.Count()}):");
+                    if (int.TryParse(selectedIndex, out int accountIndex) && accountIndex - 1 >= 0 && accountIndex - 1 < user.Accounts.Count)
+                    {
+                        break;  // Valid input, break out of the loop
+                    }
+                    else
+                    {
+                        DisplayError("Invalid account number. Please try again.");
+                    }
+                }
 
+                var account = user.Accounts[int.Parse(selectedIndex) - 1];
+
+                // Get valid loan amount
+                decimal loanedMoney;
+                while (true)
+                {
+                    string moneyCount = ValidateNonEmptyString("How much money would you like to borrow?");
+                    if (decimal.TryParse(moneyCount, out loanedMoney) && loanedMoney > 0)
+                    {
+                        if (loanedMoney > (account.Balance * 5))
+                        {
+                            DisplayError($"You can't loan more than 5 times your current balance: {account.Balance}{account.Currency}, your max is {account.Balance * 5}{account.Currency}");
+                            continue;
+                        }
+                        else
+                        {
+                            break;  // Valid input, break out of the loop
+                        }
+                    }
+                    else
+                    {
+                        DisplayError("Invalid input. Please enter a valid loan amount greater than 0.");
+                    }
+                }
+
+                // Get valid loan period
+                int loanPeriod;
+                while (true)
+                {
+                    string monthCount = ValidateNonEmptyString("Over how many months do you plan to repay the loan? (1-240)");
+                    if (int.TryParse(monthCount, out loanPeriod) && loanPeriod > 0 && loanPeriod <= 240)
+                    {
+                        break;  // Valid input, break out of the loop
+                    }
+                    else
+                    {
+                        DisplayError("Invalid input. Please enter a valid loan period between 1 and 240.");
+                    }
+                }
+
+                // Apply loan to the selected account
+                try
+                {
+                    user.Loan(0.05m, loanedMoney, loanPeriod);
+                    account.Deposit(loanedMoney);
+                    PrintCenteredText($"Loan of {loanedMoney} {account.Currency} approved. You have {loanPeriod} months to repay.");
+                    PrintCenteredText($"Loan start date: {DateTime.Now}, end date: {DateTime.Now.AddMonths(loanPeriod)}");
+                }
+                catch (Exception ex)
+                {
+                    DisplayError(ex.Message);
+                }
+
+                WaitForX();
                 return;
             }
-
-            string selectedIndex = ValidateNonEmptyString($"Enter the account number to loan money to (0-{user.Accounts.Count() - 1}):");
-            if (!int.TryParse(selectedIndex, out int accountIndex) || accountIndex < 0 || accountIndex >= user.Accounts.Count)
-            {
-                DisplayError("Invalid account number.");
-                WaitForX();
-                return;
-            }
-
-            var account = user.Accounts[accountIndex];
-
-            string moneyCount = ValidateNonEmptyString("How much money would you like to borrow?");
-
-            int moneyAmount = 0;
-            try
-            {
-                moneyAmount = Convert.ToInt32(moneyCount);
-            }
-
-            catch (Exception A)
-            {
-                DisplayError(A.Message);
-                WaitForX();
-                return;
-            }
-
-            if (!decimal.TryParse(moneyCount, out decimal loanedMoney) || loanedMoney <= 0)
-            {
-                DisplayError("Invalid input. Please enter a valid loan amount greater than 0.");
-                WaitForX();
-                return;
-            }
-
-            string monthCount = ValidateNonEmptyString("Over how many months do you plan to repay the loan? (1-240)");
-            if (!int.TryParse(monthCount, out int loanPeriod) || loanPeriod <= 0 || loanPeriod > 240)
-            {
-                DisplayError("Invalid input. Please enter a valid loan period between 1 and 240.");
-                WaitForX();
-                return;
-            }
-
-            // Apply loan to the selected account
-            try
-            {
-                user.Loan(0.05m, loanedMoney, loanPeriod);
-                Console.WriteLine($"Loan of {loanedMoney} {account.Currency} approved. You have {loanPeriod} months to repay.");
-                Console.WriteLine($"Loan start date: {DateTime.Now}, end date: {DateTime.Now.AddMonths(loanPeriod)}");
-            }
-            catch (Exception ex)
-            {
-                DisplayError(ex.Message);
-            }
-            WaitForX();
         }
+
 
         static void ViewAccounts(User user, bool detailed)
         {
@@ -338,8 +385,7 @@ ________________________________________________________________________________
 
             if (user.Accounts.Count == 0)
             {
-                PrintCenteredText("You have no accounts yet, go make one!", true, ConsoleColor.Yellow);
-                WaitForX();
+                DisplayError("You have no accounts yet, go make one!");
                 return;
             }
 
@@ -354,18 +400,18 @@ ________________________________________________________________________________
                 if (account is SavingsAccount savingsAccount)
                 {
                     PrintCenteredText(
-                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance,-12:C} | {account.Currency,-8} | Savings Account |", true, ConsoleColor.White);
-                    PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
+                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance.ToString("F2"),-12} | {account.Currency,-8} | Savings Account |", true, ConsoleColor.White);
 
                     if (detailed)
                     {
                         PrintCenteredText($"  Interest Income: {savingsAccount.Balance * savingsAccount.InterestRate:C}, Interest Rate: {savingsAccount.InterestRate * 100}%", true, ConsoleColor.DarkYellow);
                     }
+                    PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
                 }
                 else
                 {
                     PrintCenteredText(
-                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance,-12:C} | {account.Currency,-8} | Private Account |", true, ConsoleColor.White);
+                        $"| {accountNumber,-3} | {account.AccountNumber,-36} | {account.Balance.ToString("F2"),-12} | {account.Currency,-8} | Private Account |", true, ConsoleColor.White);
                     PrintCenteredText("---------------------------------------------------------------------------------------------", true, ConsoleColor.Gray);
                 }
                 accountNumber++;
@@ -376,222 +422,332 @@ ________________________________________________________________________________
 
         static void Deposit(User user)
         {
+            if (user.Accounts.Count == 0)
+            {
+                DisplayError("You have no accounts to deposit to.");
+                WaitForX();
+                return;
+            }
             ViewAccounts(user, false);
-            string? accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to deposit funds to (1-{user.Accounts.Count()}):");
-
-            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex - 1 < 0 || accountIndex - 1 >= user.Accounts.Count)
+            // Get valid account selection
+            string accountIndexInput;
+            while (true)
             {
-                DisplayError("Invalid account number.");
-                WaitForX();
-                return;
+                accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to deposit funds to (1-{user.Accounts.Count()}):");
+                if (int.TryParse(accountIndexInput, out int accountIndex) && accountIndex - 1 >= 0 && accountIndex - 1 < user.Accounts.Count)
+                {
+                    break;  // Valid input, break out of the loop
+                }
+                else
+                {
+                    DisplayError("Invalid account number. Please try again.");
+                }
             }
 
-            var account = user.Accounts[accountIndex - 1];
+            var account = user.Accounts[int.Parse(accountIndexInput) - 1];
 
-            string depositAmount = ValidateNonEmptyString("Enter the amount you want to deposit:");
-            if (!decimal.TryParse(depositAmount, out decimal amount) || amount <= 0)
+            // Get valid deposit amount
+            decimal amount;
+            while (true)
             {
-                DisplayError("Invalid amount.");
-                WaitForX();
-                return;
+                string depositAmount = ValidateNonEmptyString("Enter the amount you want to deposit:");
+                if (decimal.TryParse(depositAmount, out amount) && amount > 0)
+                {
+                    break;  // Valid input, break out of the loop
+                }
+                else
+                {
+                    DisplayError("Invalid amount. Please enter a valid deposit amount greater than 0.");
+                }
             }
 
+            // Perform the deposit operation
             try
             {
                 account.Deposit(amount);
                 PrintCenteredText($"Successfully deposited {amount} {account.Currency} to account {account.AccountNumber}.");
-                PrintCenteredText($"The accounts new balance is: {account.Balance} {account.Currency}.");
+                PrintCenteredText($"The account's new balance is: {account.Balance} {account.Currency}.");
                 WaitForX();
             }
             catch (Exception ex)
             {
-                DisplayError($"Occurred during deposit: {ex.Message}");
+                DisplayError($"An error occurred during the deposit: {ex.Message}");
             }
         }
 
+
         static void Withdraw(User user)
         {
+            if (user.Accounts.Count == 0)
+            {
+                DisplayError("You have no accounts to deposit to.");
+                WaitForX();
+                return;
+            }
             ViewAccounts(user, false);
-            string accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to withdraw funds from (1-{user.Accounts.Count()}):");
 
-            if (!int.TryParse(accountIndexInput, out int accountIndex) || accountIndex - 1 < 0 || accountIndex - 1 >= user.Accounts.Count)
+            // Get valid account selection
+            string accountIndexInput;
+            while (true)
             {
-                DisplayError("Invalid account number.");
-                return;
+                accountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to withdraw funds from (1-{user.Accounts.Count()}):");
+                if (int.TryParse(accountIndexInput, out int accountIndex) && accountIndex - 1 >= 0 && accountIndex - 1 < user.Accounts.Count)
+                {
+                    break;  // Valid input, break out of the loop
+                }
+                else
+                {
+                    DisplayError("Invalid account number. Please try again.");
+                }
             }
 
-            var account = user.Accounts[accountIndex - 1];
+            var account = user.Accounts[int.Parse(accountIndexInput) - 1];
 
-            string amountInput = ValidateNonEmptyString("Enter the amount you want to withdraw:");
-            if (!decimal.TryParse(amountInput, out decimal amount) || amount <= 0)
+            // Get valid withdrawal amount
+            decimal amount;
+            while (true)
             {
-                DisplayError("Invalid amount.");
-                return;
+                string amountInput = ValidateNonEmptyString("Enter the amount you want to withdraw:");
+                if (decimal.TryParse(amountInput, out amount) && amount > 0 && amount <= account.Balance)
+                {
+                    break;  // Valid input, break out of the loop
+                }
+                else
+                {
+                    if (amount <= 0)
+                    {
+                        DisplayError("Invalid amount. Please enter a valid withdrawal amount greater than 0.");
+                    }
+                    else
+                    {
+                        DisplayError($"Insufficient funds. You can only withdraw up to {account.Balance} {account.Currency}.");
+                    }
+                }
             }
 
+            // Perform the withdrawal operation
             try
             {
                 Console.WriteLine();
                 account.Withdraw(amount);
                 PrintCenteredText($"Successfully withdrew {amount} {account.Currency} from account {account.AccountNumber}.");
-                PrintCenteredText($"The accounts new balance is: {account.Balance} {account.Currency}.");
+                PrintCenteredText($"The account's new balance is: {account.Balance} {account.Currency}.");
                 WaitForX();
             }
             catch (Exception ex)
             {
-                DisplayError($"Ooccurred during withdrawal: {ex.Message}");
+                DisplayError($"An error occurred during withdrawal: {ex.Message}");
             }
         }
+
+
         static void TransferFunds(User user)
         {
-            string transferOption = ValidateNonEmptyString("Choose transfer option:\n" +
-                              "1. Transfer to another account (within your own accounts)\n" +
-                              "2. Transfer to another user's account\n");
-
-            if (transferOption == "1")
+            if (user.Accounts.Count == 0)
             {
-                ClearAndPrintAsciiArt();
-                ViewAccounts(user, false);
-                // Transfer within the user's own accounts
-                string? fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
+                DisplayError("You have no accounts to deposit to.");
+                WaitForX();
+                return;
+            }
+            while (true)
+            {
+                PrintCenteredText("Choose transfer option:\n");
+                PrintCenteredText("1. Transfer to another account (within your own accounts)", false, ConsoleColor.White);
+                string transferOption = ValidateNonEmptyString("2. Transfer to another user's account");
 
-                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex - 1 < 0 || fromAccountIndex - 1 >= user.Accounts.Count)
+                if (transferOption != "1" && transferOption != "2")
                 {
-                    DisplayError("Invalid account number.");
-                    return;
+                    DisplayError("Invalid option. Please try again.");
+                    continue;
                 }
 
-                var fromAccount = user.Accounts[fromAccountIndex - 1];
-
-                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{user.Accounts.Count()}):");
-
-                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex - 1 < 0 || toAccountIndex - 1 >= user.Accounts.Count || toAccountIndex - 1 == fromAccountIndex - 1)
+                if (transferOption == "1")
                 {
-                    DisplayError("Invalid account number.");
-                    return;
+                    ClearAndPrintAsciiArt();
+                    ViewAccounts(user, false);
+
+                    // Get valid 'from account' selection
+                    int fromAccountIndex;
+                    while (true)
+                    {
+                        string fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
+                        if (int.TryParse(fromAccountIndexInput, out fromAccountIndex) && fromAccountIndex - 1 >= 0 && fromAccountIndex - 1 < user.Accounts.Count)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid account number. Please try again.");
+                        }
+                    }
+
+                    var fromAccount = user.Accounts[fromAccountIndex - 1];
+
+                    // Get valid 'to account' selection
+                    int toAccountIndex;
+                    while (true)
+                    {
+                        string toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{user.Accounts.Count()}):");
+                        if (int.TryParse(toAccountIndexInput, out toAccountIndex) && toAccountIndex - 1 >= 0 && toAccountIndex - 1 < user.Accounts.Count && toAccountIndex - 1 != fromAccountIndex - 1)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid account number. Please try again.");
+                        }
+                    }
+
+                    var toAccount = user.Accounts[toAccountIndex - 1];
+
+                    if (fromAccount.Currency != toAccount.Currency)
+                    {
+                        PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency}. The current conversion rate is: ");
+                        PrintCenteredText(_bankSystem.DisplayExchangeRates());
+                    }
+
+                    decimal amount;
+                    while (true)
+                    {
+                        string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
+                        if (decimal.TryParse(transferAmount, out amount) && amount > 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid amount. Please enter a valid amount greater than 0.");
+                        }
+                    }
+
+                    decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
+
+                    try
+                    {
+                        _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, fromAccount, toAccount, amount, convertedAmount));
+                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                        WaitForX();
+                        return;
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        DisplayError(ex.Message);
+                        continue;
+                    }
                 }
-
-                var toAccount = user.Accounts[toAccountIndex - 1];
-
-                if (fromAccount.Currency != toAccount.Currency)
+                else if (transferOption == "2")
                 {
-                    PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency} the current conversion rate is: ");
-                    PrintCenteredText(_bankSystem.DisplayExchangeRates());
-                }
+                    // Transfer to another user's account
+                    User? recipient;
+                    while (true)
+                    {
+                        string recipientUsername = ValidateNonEmptyString("Enter the username of the recipient:");
+                        recipient = _bankSystem.Users.FirstOrDefault(u => u.Username.Equals(recipientUsername, StringComparison.OrdinalIgnoreCase));
 
-                string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
+                        if (recipient != null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Recipient not found. Please try again.");
+                        }
+                    }
 
-                if (!decimal.TryParse(transferAmount, out decimal amount) || amount <= 0)
-                {
-                    DisplayError("Invalid amount.");
-                    return;
-                }
+                    if (recipient.Accounts.Count == 0)
+                    {
+                        DisplayError("The recipient does not have any accounts.");
+                        WaitForX();
+                        return;
+                    }
 
-                decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
+                    ClearAndPrintAsciiArt();
+                    ViewAccounts(user, false);
 
-                try
-                {
-                    _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, fromAccount, toAccount, convertedAmount));
-                    PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
-                    WaitForX();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    DisplayError(ex.Message);
+                    // Get valid 'from account' selection
+                    int fromAccountIndex;
+                    while (true)
+                    {
+                        string fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
+                        if (int.TryParse(fromAccountIndexInput, out fromAccountIndex) && fromAccountIndex - 1 >= 0 && fromAccountIndex - 1 < user.Accounts.Count)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid account number. Please try again.");
+                        }
+                    }
+
+                    var fromAccount = user.Accounts[fromAccountIndex - 1];
+
+                    PrintCenteredText($"Available accounts for {recipient.Username}:");
+                    for (int i = 0; i < recipient.Accounts.Count; i++)
+                    {
+                        var account = recipient.Accounts[i];
+                        PrintCenteredText($"{i + 1}. Account number: {account.AccountNumber}, Currency: {account.Currency}");
+                    }
+
+                    int toAccountIndex;
+                    while (true)
+                    {
+                        string toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{recipient.Accounts.Count()}):");
+                        if (int.TryParse(toAccountIndexInput, out toAccountIndex) && toAccountIndex - 1 >= 0 && toAccountIndex - 1 < recipient.Accounts.Count)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid account number. Please try again.");
+                        }
+                    }
+
+                    var toAccount = recipient.Accounts[toAccountIndex - 1];
+
+                    if (fromAccount.Currency != toAccount.Currency)
+                    {
+                        PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency}. The current conversion rate is: ");
+                        _bankSystem.DisplayExchangeRates();
+                    }
+
+                    decimal amount;
+                    while (true)
+                    {
+                        string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
+                        if (decimal.TryParse(transferAmount, out amount) && amount > 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            DisplayError("Invalid amount. Please enter a valid amount greater than 0.");
+                        }
+                    }
+
+                    decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
+                    try
+                    {
+                        _bankSystem.AddTransactionToPending(user.TransferFunds(user, recipient, fromAccount, toAccount, amount, convertedAmount));
+                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                        WaitForX();
+                        return;
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        DisplayError(ex.Message);
+                        continue;
+                    }
                 }
             }
-            else if (transferOption == "2")
-            {
-                // Transfer to another user's account
-                string recipientUsername = ValidateNonEmptyString("Enter the username of the recipient:");
-
-                User? recipient = _bankSystem.Users.FirstOrDefault(u => u.Username.Equals(recipientUsername, StringComparison.OrdinalIgnoreCase));
-
-                if (recipient == null)
-                {
-                    DisplayError("Recipient not found.");
-                    return;
-                }
-
-                if (recipient.Accounts.Count == 0)
-                {
-                    DisplayError("They dont have any accounts!");
-                    return;
-                }
-
-                ClearAndPrintAsciiArt();
-                ViewAccounts(user, false);
-                string? fromAccountIndexInput = ValidateNonEmptyString($"\nEnter the account number you want to transfer funds from (1-{user.Accounts.Count()}):");
-
-                if (!int.TryParse(fromAccountIndexInput, out int fromAccountIndex) || fromAccountIndex - 1 < 0 || fromAccountIndex - 1 >= user.Accounts.Count)
-                {
-                    DisplayError("Invalid account number.");
-                    return;
-                }
-
-                var fromAccount = user.Accounts[fromAccountIndex - 1];
-
-                PrintCenteredText($"Available accounts for {recipient.Username}:");
-                for (int i = 0; i < recipient.Accounts.Count; i++)
-                {
-                    var account = recipient.Accounts[i];
-                    PrintCenteredText($"{i}. Account number: {account.AccountNumber}, Balance: {account.Balance}, Currency: {account.Currency}");
-                }
-
-                string? toAccountIndexInput = ValidateNonEmptyString($"Enter the account number you want to transfer funds to (1-{recipient.Accounts.Count()}):");
-
-                if (!int.TryParse(toAccountIndexInput, out int toAccountIndex) || toAccountIndex - 1 < 0 || toAccountIndex - 1 >= recipient.Accounts.Count)
-                {
-                    DisplayError("Invalid account number.");
-                    WaitForX();
-                    return;
-                }
-
-                var toAccount = recipient.Accounts[toAccountIndex - 1];
-
-                if (fromAccount.Currency != toAccount.Currency)
-                {
-                    PrintCenteredText($"You are trying to transfer {fromAccount.Currency} to {toAccount.Currency} the current conversion rate is: ");
-                    _bankSystem.DisplayExchangeRates();
-                }
-
-                string transferAmount = ValidateNonEmptyString("Enter the amount you want to transfer:");
-
-                if (!decimal.TryParse(transferAmount, out decimal amount) || amount <= 0)
-                {
-                    DisplayError("Invalid amount.");
-                    return;
-                }
-
-                decimal convertedAmount = _bankSystem.ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency);
-
-                try
-                {
-                    _bankSystem.AddTransactionToPending(user.TransferFunds(user, recipient, fromAccount, toAccount, convertedAmount));
-                    PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
-                    WaitForX();
-                }
-
-                catch (InvalidOperationException ex)
-                {
-                    DisplayError(ex.Message);
-                }
-            }
-            else
-            {
-                PrintCenteredText("Invalid option selected.");
-            }
-
-            WaitForX();
         }
-
 
         static void OpenNewAccount(User user)
         {
             var availableCurrencies = new HashSet<string> { "USD", "EUR", "SEK" };
             string stringType = "";
 
-            PrintCenteredText("Choose type of account:\n");
+            // Account type selection with validation
+            PrintCenteredText("Choose type of account:");
             PrintCenteredText("1. Private Account");
             PrintCenteredText("2. Saving Account");
 
@@ -602,59 +758,63 @@ ________________________________________________________________________________
 
                 if (accountype == "1" || accountype == "2")
                 {
-                    stringType = accountype == "1" ? "Account" : "Saving Account";
-
-                    break;
+                    stringType = accountype == "1" ? "Private Account" : "Saving Account";
+                    break;  // Valid input, break out of the loop
                 }
 
-                DisplayError("Invalid account type. Please enter 1 or 2.\n");
+                DisplayError("Invalid account type. Please enter 1 or 2.");
             }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            PrintCenteredText("Available Currencies: USD, EUR, SEK");
-            Console.ResetColor();
+            // Currency selection with validation
             string userCurrency;
-
             while (true)
             {
-                Console.WriteLine("\nChoose Currency:");
-                userCurrency = Console.ReadLine()?.ToUpper();
+                Console.ForegroundColor = ConsoleColor.Green;
+                PrintCenteredText("Available Currencies: USD, EUR, SEK");
+                Console.ResetColor();
+
+                userCurrency = ValidateNonEmptyString("Choose Currency:").ToUpper();
 
                 if (availableCurrencies.Contains(userCurrency))
                 {
-
-                    Console.WriteLine($"{stringType} Created!");
+                    PrintCenteredText($"{stringType} Created!");
                     WaitForX();
-                    break;
+                    break;  // Valid input, break out of the loop
                 }
 
-                DisplayError("Invalid currency. Please enter on of the following: USD, EUR, SEK.");
+                DisplayError("Invalid currency. Please enter one of the following: USD, EUR, SEK.");
             }
 
+            // Account creation based on type
             if (accountype == "1")
             {
                 user.OpenNewAccount(userCurrency);
             }
             else
             {
-                user.OpenNewSavingAccount("USD", 0.05m);
+                user.OpenNewSavingAccount(userCurrency, 0.05m);  // Assuming the saving account has a fixed interest rate
             }
         }
 
-        static void CheckTransactions(User user)
+        void CheckTransactions(User user)
         {
-            Console.WriteLine("Transactions:");
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("|    Date and Time    | Amount | Currency |               Sender ID              |               Receiver ID            |");
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
-            foreach (var transaction in user.Transactions)
+            if (user.Transactions.Count == 0)
             {
-                Console.WriteLine($"| {transaction.Timestamp} | {transaction.Amount,-6} | {transaction.Currency,-6}   | {transaction.FromAccount.AccountNumber,-10} | {transaction.ToAccount.AccountNumber,-28} |");
+                DisplayError("No transactions to display.");
             }
+            else
+            {
+                Console.WriteLine("Transactions:");
+                Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine("|    Date and Time    | Amount | Currency |               Sender ID              |               Receiver ID            |");
+                Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
+                foreach (var transaction in user.Transactions)
+                {
+                    Console.WriteLine($"| {transaction.Timestamp} | {transaction.Amount,-6} | {transaction.Currency,-6}   | {transaction.FromAccount.AccountNumber,-10} | {transaction.ToAccount.AccountNumber,-28} |");
+                }
+                Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            }
             // Pauses execution to allow user to view transactions
             WaitForX();
         }
@@ -663,19 +823,22 @@ ________________________________________________________________________________
         {
             string username;
 
+            // Loop until a valid username is entered that doesn't already exist
             while (true)
             {
                 username = ValidateNonEmptyString("Enter the username of the new user:");
                 if (!_bankSystem.Users.Any(user => user.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
                 {
-                    break;
+                    break;  // Valid username, exit the loop
                 }
                 DisplayError("Username already exists. Please choose a different username.");
             }
 
             string password;
             string password2;
-            while (true) // Loop until the user successfully confirms the password
+
+            // Loop until the user successfully confirms the password
+            while (true)
             {
                 password = ReadPasswordWithValidation("Enter the password for the new user: ");
                 Console.Write("Confirm Password: ");
@@ -687,11 +850,23 @@ ________________________________________________________________________________
                 }
                 else
                 {
-                    break;
+                    break;  // Passwords match, exit the loop
                 }
             }
 
-            string typeOfUser = ValidateAccountTypeInput("Enter the type of user (1: Regular, 2: Admin):");
+            // Get valid user type input
+            string typeOfUser;
+            while (true)
+            {
+                typeOfUser = ValidateAccountTypeInput("Enter the type of user (1: Regular, 2: Admin):");
+
+                if (typeOfUser == "1" || typeOfUser == "2")
+                {
+                    break;  // Valid input, exit the loop
+                }
+
+                DisplayError("Invalid user type specified. Please enter 1 for Regular or 2 for Admin.");
+            }
 
             // Create the new user based on the type
             if (typeOfUser == "1")
@@ -701,11 +876,6 @@ ________________________________________________________________________________
             else if (typeOfUser == "2")
             {
                 _bankSystem.Users.Add(new Admin(username, password));
-            }
-            else
-            {
-                DisplayError("Invalid user type specified.");
-                return;
             }
 
             PrintCenteredText("New user created successfully.");
@@ -719,8 +889,6 @@ ________________________________________________________________________________
             Console.Clear();
             bankProgram.MainMenu();
         }
-
-
 
         static void WaitForX()
         {
