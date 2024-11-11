@@ -2,11 +2,17 @@
 This is a C# Console app where the instructions were to make a console bank management program (kinda)
 
 ## Gruppmedlemmar: (Slackers)
-Max Berglund, Fredrik Andersson, Pakapol (Zian), Erik Bäckdahl & Eyosias Abera
+Max Berglund, Fredrik Andersson, Pakapol (Zian) & Eyosias Abera
 
 # Bank Management System
 
 A simple bank management system built in C#. This application allows users to manage bank accounts, perform transactions, and transfer funds using a command-line interface. It supports features such as user account creation, fund withdrawals, and currency conversion for transfers.
+
+---
+
+<img src="LoginPage.png" alt="Login Page" width="40%" height="25%">
+<br>
+<img src="MainMenu.png" alt="Login Page" width="40%" height="25%">
 
 ---
 
@@ -15,7 +21,6 @@ A simple bank management system built in C#. This application allows users to ma
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
 - [Usage](#usage)
   - [Logging In](#logging-in)
   - [Main Menu Options](#main-menu-options)
@@ -76,7 +81,7 @@ After logging in, you will have access to several options, depending on your rol
 - Select a currency (**USD**, **EUR**, **SEK**).
 - Savings accounts come with a default interest rate.
 
-### Currencies
+#### Currencies (Admin)
 
 - Update the values of different available currencies.
 - Add/Create new currencies to the program.
