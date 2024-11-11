@@ -1,5 +1,5 @@
 # AssetManagers_GruppProjekt
-This is a C# Console app where the instructions were to make a console bank management program (kinda)
+This is a C# Console app where the instructions were to make a console bank management program
 
 ## Gruppmedlemmar: (Slackers)
 Max Berglund, Fredrik Andersson, Pakapol (Zian) & Eyosias Abera :)
