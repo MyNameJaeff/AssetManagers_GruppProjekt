@@ -3,14 +3,13 @@ using System.Diagnostics;
 
 public class BankSystem
 {
-    // Properties
     public List<User> Users { get; set; }
     public List<Account> Accounts { get; set; }
     private List<Transaction> _pendingTransactions { get; set; }
     public Dictionary<string, decimal> ExchangeRates { get; set; }
     private int FailedLoginAttempts { get; set; }
 
-    // Constructor
+    // Initializes the banksystem with some default values and empty lists
     public BankSystem()
     {
         Users = new List<User>();
@@ -24,58 +23,7 @@ public class BankSystem
             };
     }
 
-    public bool UpdateExchangeRate()
-    {
-
-        foreach (var cur in ExchangeRates)
-        {
-            Console.WriteLine($"{cur.Key}: {cur.Value}");
-        }
-        // Prompt user for the currency they want to update
-        Console.WriteLine("What currency would you like to change the rate of?");
-        string currencyInput = Console.ReadLine()?.ToUpper().Trim();
-
-        // Check if the currencyInput exists in ExchangeRates
-        if (ExchangeRates.ContainsKey(currencyInput))
-        {
-            Console.WriteLine($"Current exchange rate for {currencyInput}: {ExchangeRates[currencyInput]}");
-
-            // Prompt for a new exchange rate
-            Console.Write("Enter the new exchange rate: ");
-            if (decimal.TryParse(Console.ReadLine(), out decimal newRate) && newRate > 0)
-            {
-                // Update the exchange rate for the given currency
-                ExchangeRates[currencyInput] = newRate;
-                Console.WriteLine($"Exchange rate for {currencyInput} updated to {newRate}.");
-                Console.WriteLine("Press X to go back to the main menu");
-                while (true)
-                {
-                    // Capture the key press
-                    ConsoleKey keyInfo = Console.ReadKey(intercept: true).Key;
-
-                    // Check if the key pressed was 'X' or 'x'
-                    if (keyInfo == ConsoleKey.X)
-                    {
-                        Console.Clear();
-                        Console.ResetColor(); // Reset color to default before returning
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Invalid exchange rate. Please enter a valid decimal value.");
-                return false;
-            }
-        }
-        else
-        {
-            // Currency not found in ExchangeRates
-            Console.WriteLine($"Currency {currencyInput} not found in the exchange rates.");
-            return false;
-        }
-    }
-
+    // Displays all of the exchange rates in the bank system and returns as a string that gets centered in the BankProgram
     public string DisplayExchangeRates()
     {
         string[] exchangeRates = new string[]
@@ -91,11 +39,13 @@ public class BankSystem
         return string.Join(Environment.NewLine, exchangeRates);
     }
 
+    // Checks if the user is locked out
     public bool IsLockedOut()
     {
         return FailedLoginAttempts >= 3;
     }
 
+    // Logs in the user and returns the user if the login is successful, otherwise returns null
     public User? Login(string username, string password)
     {
         if (IsLockedOut())
@@ -128,11 +78,13 @@ public class BankSystem
         }
     }
 
+    // Adds a transaction to the pending list of transactions
     public void AddTransactionToPending(Transaction transaction)
     {
         _pendingTransactions.Add(transaction);
     }
 
+    // Executes all pending transactions in the list and logs the results to the debug window
     public void ExecutePendingTransactions()
     {
         // Ensure the _pendingTransactions list is initialized
@@ -163,18 +115,23 @@ public class BankSystem
                 Debug.WriteLine("-------------------------------\n");
 
                 // Remove the transaction from the pending list after successful execution
+                transaction.FromUser.Transactions.Add(transaction);
                 _pendingTransactions.Remove(transaction);
             }
             catch (Exception ex)
             {
                 // Log the error and continue with the next transaction
                 Debug.WriteLine($"Failed to execute transaction: {transaction}. Error: {ex.Message}");
+                Transaction failedTransaction = new Transaction(transaction.FromUser, transaction.ToUser, transaction.FromAccount, transaction.ToAccount, transaction.Amount, transaction.ConvertedAmount, transaction.Currency, ex.Message);
+                transaction.FromUser.Transactions.Add(failedTransaction);
+                _pendingTransactions.Remove(transaction);
             }
         }
 
         Debug.WriteLine("All Transactions have been completed!\n");
     }
 
+    // Converts an amount from one currency to another using the exchange rates
     public decimal ConvertCurrency(decimal amount, string fromCurrency, string toCurrency)
     {
         if (fromCurrency == toCurrency)

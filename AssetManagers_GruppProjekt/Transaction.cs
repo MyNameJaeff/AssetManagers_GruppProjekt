@@ -10,7 +10,8 @@
         public decimal ConvertedAmount { get; private set; }
         public string Currency { get; private set; }
         public DateTime Timestamp { get; private set; }
-        public Transaction(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount, decimal convertedAmount, string currency)
+        public string ErrorMsg { get; set; }
+        public Transaction(User fromUser, User toUser, Account fromAccount, Account toAccount, decimal amount, decimal convertedAmount, string currency, string errorMsg = "")
         {
             FromUser = fromUser;
             ToUser = toUser;
@@ -20,6 +21,7 @@
             ConvertedAmount = convertedAmount;
             Currency = currency;
             Timestamp = DateTime.Now;
+            ErrorMsg = errorMsg;
         }
         public override string ToString()
         {
