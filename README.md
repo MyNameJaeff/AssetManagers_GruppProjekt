@@ -10,9 +10,9 @@ A simple bank management system built in C#. This application allows users to ma
 
 ---
 
-<img src="LoginPage.png" alt="Login Page" width="40%" height="25%">
+<img src="LoginPage.png" alt="Login Page" width="50%" height="25%">
 <br>
-<img src="MainMenu.png" alt="Login Page" width="40%" height="25%">
+<img src="MainMenu.png" alt="Login Page" width="50%" height="25%">
 
 ---
 
