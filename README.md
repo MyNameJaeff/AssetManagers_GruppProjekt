@@ -2,7 +2,7 @@
 This is a C# Console app where the instructions were to make a console bank management program (kinda)
 
 ## Gruppmedlemmar: (Slackers)
-Max Berglund, Fredrik Andersson, Pakapol (Zian) & Eyosias Abera
+Max Berglund, Fredrik Andersson, Pakapol (Zian) & Eyosias Abera :)
 
 # Bank Management System
 
