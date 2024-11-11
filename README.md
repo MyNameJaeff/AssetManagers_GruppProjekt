@@ -9,10 +9,14 @@ Max Berglund, Fredrik Andersson, Pakapol (Zian) & Eyosias Abera :)
 A simple bank management system built in C#. This application allows users to manage bank accounts, perform transactions, and transfer funds using a command-line interface. It supports features such as user account creation, fund withdrawals, and currency conversion for transfers.
 
 ---
-
+### Login
 <img src="LoginPage.png" alt="Login Page" width="50%" height="25%">
-<br>
+
+### Main Menu
 <img src="MainMenu.png" alt="Login Page" width="50%" height="25%">
+
+### OOAD (Open in new window):
+https://github.com/user-attachments/assets/4349f4a7-2c75-4c50-880c-c7cfe721493b
 
 ---
 
