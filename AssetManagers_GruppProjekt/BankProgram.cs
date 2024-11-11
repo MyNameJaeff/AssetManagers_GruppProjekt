@@ -956,7 +956,9 @@ ________________________________________________________________________________
             {
                 // Prompt user to enter a password and confirm it
                 password = ReadPasswordWithValidation("Enter the password for the new user: ");
-                PrintCenteredText("Confirm Password: ");
+                string prompt = "Confirm Password: ";
+                PrintCenteredText(prompt, false, ConsoleColor.White);
+                Console.SetCursorPosition((int)((Console.WindowWidth - prompt.Length + Math.Round(prompt.Length * 0.1)) / 2), Console.CursorTop); // Centering input cursor
                 password2 = ReadPassword();
 
                 // Check if passwords match
@@ -1155,7 +1157,8 @@ ________________________________________________________________________________
         {
             while (true)
             {
-                Console.Write(prompt);
+                PrintCenteredText(prompt, false, ConsoleColor.White);
+                Console.SetCursorPosition((int)((Console.WindowWidth - prompt.Length + Math.Round(prompt.Length * 0.1)) / 2), Console.CursorTop); // Centering input cursor
                 string password = ReadPassword();
 
                 // if IsValidPassword return as true then the method leaves the loop
@@ -1208,8 +1211,7 @@ ________________________________________________________________________________
         {
             while (true)
             {
-                Console.WriteLine(prompt);
-                string? input = Console.ReadLine();
+                string? input = ValidateNonEmptyString(prompt);
                 // makes sure it is either 1 or 2 otherwise you get error
                 if (input == "1" || input == "2")
                 {
