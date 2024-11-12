@@ -55,6 +55,11 @@ ________________________________________________________________________________
         // Testing code that makes up some premade values for the bank system
         public void InitializeValues()
         {
+            PrintCenteredText("Press F11 for fullscreen mode (if supported by your terminal).");
+            PrintCenteredText("(Press any key to start program...)");
+            Console.ReadKey(true);
+
+
             // Add more code here if you want to test it further, this is more of an example
             User user = new User("Jeff", "123");
             Admin admin = new Admin("Admin", "Admin");
@@ -145,7 +150,7 @@ ________________________________________________________________________________
                     "0.      Logout               ",
                     "-----------------------------",
                     "X.      Exit                 ",
-                    "-----------------------------"
+                    "----------------------------- "
                 }).ToArray();
 
                 PrintCenteredText(string.Join(Environment.NewLine, menuOptions), true, ConsoleColor.Cyan, ConsoleColor.DarkCyan);
@@ -227,25 +232,32 @@ ________________________________________________________________________________
                 Console.ResetColor();
 
                 // Attempt to log in with provided credentials
-                User user = _bankSystem.Login(username, password);
-                if (user != null)
+                try
                 {
-                    // Successful login message
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nLogin successful. Welcome!");
-                    Console.ResetColor();
-                    userIsLoggedIn = true;
-                    return user;
+                    User user = _bankSystem.Login(username, password);
+                    if (user != null)
+                    {
+                        // Successful login message
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("\nLogin successful. Welcome!");
+                        Console.ResetColor();
+                        userIsLoggedIn = true;
+                        return user;
+                    }
+                    else
+                    {
+                        // Error message for invalid login
+                        DisplayError("\nInvalid username or password. Please try again.\n");
+                    }
+                    // Optional pause for readability
+                    Thread.Sleep(2000);
+                    Console.Clear();
                 }
-                else
+                catch (InvalidOperationException e)
                 {
-                    // Error message for invalid login
-                    DisplayError("\nInvalid username or password. Please try again.\n");
+                    DisplayError(e.Message);
+                    return null;
                 }
-
-                // Optional pause for readability
-                Thread.Sleep(2000);
-                Console.Clear();
             }
             return null;
         }

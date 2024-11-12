@@ -66,7 +66,6 @@ public class BankSystem
         else
         {
             Console.Clear();
-            Console.WriteLine("Invalid username or password.");
             FailedLoginAttempts++;
 
             if (IsLockedOut())
