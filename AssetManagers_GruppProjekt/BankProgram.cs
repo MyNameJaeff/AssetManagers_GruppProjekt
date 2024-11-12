@@ -326,6 +326,12 @@ ________________________________________________________________________________
                         DisplayError("Invalid account number. Please try again.");
                     }
                 }
+                var userTotalBalanceConverted = 0.0m;
+
+                foreach (Account accountBalance in user.Accounts)
+                {
+                    userTotalBalanceConverted += _bankSystem.ConvertCurrency(accountBalance.Balance, accountBalance.Currency, "USD");
+                }
 
                 var account = user.Accounts[int.Parse(selectedIndex) - 1]; // Selects the user's account based on their input
 
@@ -336,15 +342,15 @@ ________________________________________________________________________________
                     string moneyCount = ValidateNonEmptyString("How much money would you like to borrow?");
                     if (decimal.TryParse(moneyCount, out loanedMoney) && loanedMoney > 0)
                     {
-                        if (loanedMoney > (account.Balance * 5)) // Checks such that the user cant loan more than 5 times their account balance
+                        if (loanedMoney > (userTotalBalanceConverted * 5)) // Checks such that the user cant loan more than 5 times their account balance
                         {
                             if (account.Balance < 5)
                             {
-                                DisplayError($"You have to little money to loan anything! Minimum of 5 {account.Currency} in your account to make a loan!");
+                                DisplayError($"You have to little money to loan anything! Minimum of 5 {account.Currency} in any of your accounts to make a loan!");
                                 WaitForX();
                                 return;
                             }
-                            DisplayError($"You can't loan more than 5 times your current balance: {account.Balance}{account.Currency}, your max is {account.Balance * 5}{account.Currency}");
+                            DisplayError($"You can't loan more than 5 times your current total balance: {userTotalBalanceConverted:F2} {account.Currency}, your max is {userTotalBalanceConverted * 5:F2} {account.Currency}");
                             continue;
                         }
                         else
@@ -680,7 +686,7 @@ ________________________________________________________________________________
                         // add the Transaction to pending 
                         _bankSystem.AddTransactionToPending(user.TransferFunds(user, user, fromAccount, toAccount, amount, convertedAmount));
                         // give a success message
-                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount:F2} {toAccount.Currency}.");
                         WaitForX();
                         return;
                     }
@@ -800,7 +806,7 @@ ________________________________________________________________________________
                     try
                     {
                         _bankSystem.AddTransactionToPending(user.TransferFunds(user, recipient, fromAccount, toAccount, amount, convertedAmount));
-                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount} {toAccount.Currency}.");
+                        PrintCenteredText($"Successfully transferred {amount} {fromAccount.Currency} from account {fromAccount.AccountNumber} to account {toAccount.AccountNumber}. {convertedAmount:F2} {toAccount.Currency}.");
                         WaitForX();
                         return;
                     }
@@ -1047,7 +1053,7 @@ ________________________________________________________________________________
                 {
                     // Prompt for a new exchange rate
                     string rateInput = ValidateNonEmptyString("Enter the new exchange rate: ");
-
+                    rateInput = rateInput.Replace(".", ",");
                     // Attempt to parse the input
                     if (decimal.TryParse(rateInput, out newRate) && newRate > 0)
                     {
