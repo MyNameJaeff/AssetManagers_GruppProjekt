@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 
+
 namespace AssetManagers_GruppProjekt
 {
     internal class BankProgram
