@@ -16,7 +16,7 @@ namespace AssetManagers_GruppProjekt
         // Every 5 minutes go through all transactions and run them as long as program is running
         public void InitializeTimer()
         {
-            _transactionTimer = new System.Timers.Timer(5 * 60 * 1000); // 5 minutes in milliseconds
+            _transactionTimer = new System.Timers.Timer(1 * 60 * 1000); // An amount of minutes in milliseconds (Minutes * seconds * milliseconds)
             _transactionTimer.Elapsed += OnTransactionTimerElapsed;
             _transactionTimer.AutoReset = true;
             _transactionTimer.Enabled = true;

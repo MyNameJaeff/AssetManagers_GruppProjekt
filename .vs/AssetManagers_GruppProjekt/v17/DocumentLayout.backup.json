@@ -3,16 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\bankprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\bankprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\banksystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\banksystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\savingsaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,12 +23,20 @@
       "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\loan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\loan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\bankprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\bankprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|c:\\users\\fredr\\source\\repos\\assetmanagers_gruppprojekt\\assetmanagers_gruppprojekt\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{25D4F46E-C1EE-432E-BC39-E7A7C0DD7B93}|AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt.csproj|solutionrelative:assetmanagers_gruppprojekt\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,41 +46,43 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 6,
               "Title": "Loan.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Loan.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\Loan.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Loan.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\Loan.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-04T10:18:48.445Z"
+              "WhenOpened": "2024-11-04T10:18:48.445Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\User.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\User.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\User.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\User.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAAwBsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAAAswDwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-31T10:03:22.201Z"
+              "WhenOpened": "2024-10-31T10:03:22.201Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "BankProgram.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\BankProgram.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\BankProgram.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\BankProgram.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\BankProgram.cs",
-              "ViewState": "AgIAAIgAAAAAAAAAAAAUwJgAAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAALMEAAAAAAAAAADwv9oEAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenGroupName": "AssetManagers_GruppProjekt",
               "WhenOpened": "2024-11-04T09:03:49.74Z",
@@ -88,13 +90,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Program.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\Program.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Program.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenGroupName": "AssetManagers_GruppProjekt",
               "WhenOpened": "2024-10-28T14:27:04.847Z",
@@ -102,62 +104,66 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 4,
               "Title": "Account.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Account.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\Account.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Account.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\Account.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABFAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAswC8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T11:27:58.733Z"
+              "WhenOpened": "2024-10-30T11:27:58.733Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "Transaction.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Transaction.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\Transaction.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Transaction.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\Transaction.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenGroupName": "AssetManagers_GruppProjekt",
-              "WhenOpened": "2024-10-30T10:23:01.597Z"
+              "WhenOpened": "2024-10-30T10:23:01.597Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "Admin.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Admin.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\Admin.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\Admin.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\Admin.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T10:22:40.764Z"
+              "WhenOpened": "2024-10-30T10:22:40.764Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "SavingsAccount.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\SavingsAccount.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\SavingsAccount.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\SavingsAccount.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\SavingsAccount.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-30T10:22:29.94Z"
+              "WhenOpened": "2024-10-30T10:22:29.94Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "BankSystem.cs",
               "DocumentMoniker": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\BankSystem.cs",
               "RelativeDocumentMoniker": "AssetManagers_GruppProjekt\\BankSystem.cs",
               "ToolTip": "C:\\Users\\fredr\\source\\repos\\AssetManagers_GruppProjekt\\AssetManagers_GruppProjekt\\BankSystem.cs",
               "RelativeToolTip": "AssetManagers_GruppProjekt\\BankSystem.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAUwDMAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAAAIYAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenGroupName": "AssetManagers_GruppProjekt",
               "WhenOpened": "2024-10-30T10:22:08.451Z",
